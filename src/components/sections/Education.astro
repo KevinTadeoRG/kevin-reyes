@@ -1,0 +1,37 @@
+---
+import { getContent, getUi, type Locale } from '../../data/index.ts';
+import { formatYearMonth } from '../../lib/dates.ts';
+import Section from '../Section.astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const { education } = getContent(lang);
+const ui = getUi(lang);
+---
+
+<Section id="education" index={5} title={ui.nav.education}>
+  <ul class="divide-y divide-line border-y border-line">
+    {education.map((entry) => (
+      <li class="flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+        <div>
+          <h3 class="font-medium">{entry.degree}</h3>
+          <p class="mt-0.5 text-sm text-muted">{entry.institution}</p>
+        </div>
+        <p class="shrink-0 font-mono text-xs text-muted">
+          <time datetime={entry.period.start}>
+            {formatYearMonth(entry.period.start, ui.months)}
+          </time>
+          {' – '}
+          {entry.period.end ? (
+            <time datetime={entry.period.end}>{formatYearMonth(entry.period.end, ui.months)}</time>
+          ) : (
+            ui.experience.present
+          )}
+        </p>
+      </li>
+    ))}
+  </ul>
+</Section>

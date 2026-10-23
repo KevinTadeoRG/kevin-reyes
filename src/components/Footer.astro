@@ -1,0 +1,9 @@
+---
+import { person } from '../data/index.ts';
+
+const copyright = `© ${new Date().getFullYear()} ${person.name}`;
+---
+
+<footer class="border-t border-line">
+  <div class="mx-auto max-w-5xl px-4 py-8 font-mono text-xs text-muted sm:px-6">{copyright}</div>
+</footer>

@@ -1,0 +1,53 @@
+---
+import { getUi, person, type Locale } from '../../data/index.ts';
+import ContactForm from '../ContactForm.astro';
+import EmailReveal from '../EmailReveal.astro';
+import Section from '../Section.astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const ui = getUi(lang);
+
+/** `https://www.linkedin.com/in/x` → `linkedin.com/in/x` */
+const displayUrl = (url: string) => url.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '');
+
+const links = [
+  { label: ui.contact.linkedin, href: person.links.linkedin },
+  { label: ui.contact.github, href: person.links.github },
+];
+const term = 'font-mono text-xs tracking-wider text-muted uppercase';
+const linkClass =
+  'break-all underline decoration-line underline-offset-4 transition-colors hover:decoration-accent';
+---
+
+<Section id="contact" index={6} title={ui.nav.contact}>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+    <dl class="divide-y divide-line self-start border-y border-line">
+      {links.map((link) => (
+        <div class="py-4">
+          <dt class={term}>{link.label}</dt>
+          <dd class="mt-1.5">
+            <a href={link.href} rel="me noopener" class={linkClass}>
+              {displayUrl(link.href)}
+              <span aria-hidden="true" class="text-muted">
+                {' '}
+                ↗
+              </span>
+            </a>
+          </dd>
+        </div>
+      ))}
+      <div class="py-4">
+        <dt class={term}>{ui.contact.email}</dt>
+        <dd class="mt-1.5">
+          <EmailReveal revealLabel={ui.contact.revealEmail} />
+        </dd>
+      </div>
+    </dl>
+
+    <ContactForm form={ui.contact.form} />
+  </div>
+</Section>

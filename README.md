@@ -2,7 +2,7 @@
 
 Sitio bilingüe (español en `/`, inglés en `/en`) construido con **Astro + TypeScript (strict) + Tailwind CSS**.
 
-> Estado: **Fase 1 — contenido y estructura de datos**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
+> Estado: **Fase 2 — diseño y secciones**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
 
 ## Requisitos
 
@@ -42,14 +42,20 @@ No ejecutes `pnpm install` desde Windows sobre esta carpeta: instalaría binario
 
 ```
 src/
-  components/   # Componentes .astro y islas React (Fase 2)
-  layouts/      # BaseLayout.astro: <html lang>, <head>, estilos globales
-  pages/        # index.astro → "/" (es) · en/index.astro → "/en"
+  components/   # HomePage, Header, selector de idioma, toggle de tema, formulario…
+    sections/   # Hero, About, Experience, Stack, Projects, Education, Contact
+  layouts/      # BaseLayout.astro: <html lang>, <head>, fuentes, tema inicial
+  pages/        # index.astro → "/" (es) · en/index.astro → "/en" (solo <HomePage lang>)
   data/         # Contenido tipado ES/EN y textos de interfaz (ver abajo)
-  lib/          # Utilidades (formato de fechas)
-  styles/       # global.css (Tailwind)
+  lib/          # Utilidades: fechas, rutas por idioma, CV, correo ofuscado
+  scripts/      # site.ts: tema, sección activa, correo (JS mínimo, sin framework)
+  styles/       # global.css: tokens de color (claro/oscuro) y estilos base
 public/         # favicon, imagen OG, CV en PDF
 ```
+
+### CV en PDF
+
+Coloca `public/cv/kevin-reyes-cv-es.pdf` (y, si existe, `public/cv/kevin-reyes-cv-en.pdf`). El botón "Descargar CV" solo aparece si el archivo está; la versión en inglés usa el PDF en español si no hay uno en inglés.
 
 ## Cómo editar el contenido
 
@@ -74,6 +80,7 @@ Reglas:
 ## Notas
 
 - **Secretos:** nunca en el repo. `.env*` está en `.gitignore`; solo se permite `.env.example` como plantilla sin valores reales.
-- **Modo oscuro:** Tailwind está configurado para usar la clase `.dark` en `<html>` (el toggle llega en la Fase 2).
+- **Modo claro/oscuro:** los colores son tokens en `global.css` definidos con `light-dark()` (clases `bg-bg`, `text-fg`, `text-muted`, `border-line`, `text-accent`…). Por defecto se sigue `prefers-color-scheme`; el toggle fija `data-theme` en `<html>` y lo guarda en `localStorage`. Sin JavaScript, se sigue al sistema.
+- **Fuentes:** IBM Plex Sans y Mono vía la API de fuentes de Astro; se descargan en el build y se sirven desde el propio sitio (`font-display: swap`).
 - **TypeScript 6.0:** fijado a `~6.0` porque `typescript-eslint` y `@astrojs/check` aún no soportan TypeScript 7.
 - **Commits:** formato [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`…).

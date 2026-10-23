@@ -1,0 +1,72 @@
+---
+import { getContent, getUi, type Locale } from '../../data/index.ts';
+import { formatYearMonth } from '../../lib/dates.ts';
+import Section from '../Section.astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const { experience } = getContent(lang);
+const ui = getUi(lang);
+---
+
+<Section id="experience" index={2} title={ui.nav.experience}>
+  <ol class="space-y-14">
+    {experience.map((company) => (
+      <li>
+        <h3 class="text-xl font-semibold tracking-tight">{company.name}</h3>
+
+        <ol class="mt-5 ml-1 space-y-10 border-l border-line">
+          {company.roles.map((role) => (
+            <li class="relative pl-6">
+              <span
+                aria-hidden="true"
+                class:list={[
+                  'absolute top-1.5 -left-[5px] size-2.5 rounded-full ring-4 ring-bg',
+                  role.period.end === null ? 'bg-accent' : 'border-2 border-accent bg-bg',
+                ]}
+              />
+
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                <h4 class="font-medium">{role.title}</h4>
+                <p class="shrink-0 font-mono text-xs text-muted">
+                  <time datetime={role.period.start}>
+                    {formatYearMonth(role.period.start, ui.months)}
+                  </time>
+                  {' – '}
+                  {role.period.end ? (
+                    <time datetime={role.period.end}>
+                      {formatYearMonth(role.period.end, ui.months)}
+                    </time>
+                  ) : (
+                    ui.experience.present
+                  )}
+                </p>
+              </div>
+              <p class="mt-0.5 text-sm text-muted">{role.location}</p>
+
+              {role.summary && <p class="mt-4 leading-relaxed">{role.summary}</p>}
+
+              {role.groups.map((group) => (
+                <div class="mt-5">
+                  {group.title && (
+                    <h5 class="font-mono text-xs font-medium tracking-wider text-accent uppercase">
+                      {group.title}
+                    </h5>
+                  )}
+                  <ul class="mt-2 list-[square] space-y-2 pl-4 leading-relaxed marker:text-muted">
+                    {group.bullets.map((bullet) => (
+                      <li class="pl-1">{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </li>
+          ))}
+        </ol>
+      </li>
+    ))}
+  </ol>
+</Section>

@@ -1,0 +1,53 @@
+---
+import { getUi, person, SECTION_IDS, type Locale } from '../data/index.ts';
+import LanguageSwitch from './LanguageSwitch.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const ui = getUi(lang);
+
+const navLink =
+  'block rounded-md px-2.5 py-1.5 text-sm whitespace-nowrap text-muted transition-colors hover:text-fg aria-[current=true]:bg-surface aria-[current=true]:text-fg';
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
+  <div class="mx-auto flex h-14 max-w-5xl items-center gap-3 px-4 sm:px-6">
+    <a href="#top" class="font-mono text-sm font-medium tracking-tight">
+      {person.name}
+    </a>
+
+    <nav aria-label={ui.a11y.mainNav} class="ml-auto hidden md:block">
+      <ul class="flex items-center gap-0.5">
+        {SECTION_IDS.map((id) => (
+          <li>
+            <a href={`#${id}`} data-nav-link={id} class={navLink}>
+              {ui.nav[id]}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-1 md:ml-2 md:border-l md:border-line md:pl-3">
+      <LanguageSwitch lang={lang} />
+      <ThemeToggle labels={ui.a11y} />
+    </div>
+  </div>
+
+  <!-- Móvil: el menú es una fila con scroll horizontal (sin botón de hamburguesa). -->
+  <nav aria-label={ui.a11y.mainNav} class="border-t border-line md:hidden">
+    <ul class="flex gap-0.5 overflow-x-auto px-2 py-1.5 [mask-image:linear-gradient(to_right,black_85%,transparent)] [scrollbar-width:none]">
+      {SECTION_IDS.map((id) => (
+        <li>
+          <a href={`#${id}`} data-nav-link={id} class={navLink}>
+            {ui.nav[id]}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>

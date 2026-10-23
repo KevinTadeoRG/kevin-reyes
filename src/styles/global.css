@@ -1,4 +1,72 @@
 @import 'tailwindcss';
 
-/* Modo oscuro controlado por clase (.dark en <html>), para permitir el toggle en la Fase 2 */
-@custom-variant dark (&:where(.dark, .dark *));
+/*
+ * Colores: cada token tiene un valor claro y uno oscuro con light-dark().
+ * Por defecto se sigue al sistema (prefers-color-scheme). El toggle fija
+ * data-theme="light" | "dark" en <html> y eso fuerza color-scheme.
+ */
+:root {
+  color-scheme: light dark;
+
+  --bg: light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 250));
+  --surface: light-dark(oklch(1 0 0), oklch(0.21 0.008 250));
+  --fg: light-dark(oklch(0.22 0.01 250), oklch(0.94 0.004 250));
+  --muted: light-dark(oklch(0.46 0.012 250), oklch(0.72 0.01 250));
+  --line: light-dark(oklch(0.9 0.006 250), oklch(0.3 0.008 250));
+  /* Borde de campos de formulario: ≥ 3:1 contra --surface (WCAG 1.4.11) */
+  --field: light-dark(oklch(0.62 0.01 250), oklch(0.56 0.01 250));
+  --accent: light-dark(oklch(0.5 0.1 170), oklch(0.8 0.12 170));
+  --accent-fg: light-dark(oklch(0.99 0 0), oklch(0.18 0.02 170));
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-field: var(--field);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    /* Deja espacio para el header fijo al saltar a un ancla (#experience, etc.) */
+    scroll-padding-top: 7rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (width >= 48rem) {
+    html {
+      scroll-padding-top: 4.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+  }
+}

@@ -1,0 +1,80 @@
+---
+import type { Ui } from '../data/schema.ts';
+
+interface Props {
+  form: Ui['contact']['form'];
+}
+
+const { form } = Astro.props;
+
+const field =
+  'mt-1.5 block w-full rounded-md border border-field bg-surface px-3 py-2 text-fg disabled:cursor-not-allowed disabled:opacity-60';
+const label = 'text-sm font-medium';
+---
+
+<!--
+  Formulario visible pero deshabilitado hasta la Fase 5 (AWS Lambda + SES).
+  Los límites de longitud son solo ayuda al usuario; la validación real será en el servidor.
+-->
+<form aria-describedby="contact-form-status" novalidate>
+  <p
+    id="contact-form-status"
+    class="mb-5 rounded-md border border-dashed border-line px-3 py-2 font-mono text-xs text-muted"
+  >
+    {form.unavailable}
+  </p>
+  <fieldset disabled class="space-y-4">
+    <div>
+      <label for="contact-name" class={label}>
+        {form.name}
+      </label>
+      <input
+        id="contact-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        maxlength="100"
+        required
+        class={field}
+      />
+    </div>
+    <div>
+      <label for="contact-email" class={label}>
+        {form.email}
+      </label>
+      <input
+        id="contact-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        maxlength="254"
+        required
+        class={field}
+      />
+    </div>
+    <div>
+      <label for="contact-message" class={label}>
+        {form.message}
+      </label>
+      <textarea
+        id="contact-message"
+        name="message"
+        rows="5"
+        maxlength="5000"
+        required
+        class={field}
+      ></textarea>
+    </div>
+    <!-- Honeypot: oculto para personas; si un bot lo llena, el servidor descarta el envío. -->
+    <div aria-hidden="true" class="absolute -left-[9999px] h-px w-px overflow-hidden">
+      <label for="contact-website">{form.honeypot}</label>
+      <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <button
+      type="submit"
+      class="rounded-md bg-accent px-4 py-2.5 text-sm font-medium text-accent-fg disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {form.submit}
+    </button>
+  </fieldset>
+</form>

@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
@@ -12,6 +12,29 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
+  // Las fuentes se descargan en el build y se sirven desde el propio sitio (sin peticiones a terceros).
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: 'IBM Plex Sans',
+      cssVariable: '--font-plex-sans',
+      weights: [400, 500, 600],
+      styles: ['normal'],
+      subsets: ['latin'],
+      display: 'swap',
+      fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: 'IBM Plex Mono',
+      cssVariable: '--font-plex-mono',
+      weights: [400, 500],
+      styles: ['normal'],
+      subsets: ['latin'],
+      display: 'swap',
+      fallbacks: ['ui-monospace', 'monospace'],
+    },
+  ],
   vite: {
     plugins: [tailwindcss()],
   },

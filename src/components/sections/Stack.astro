@@ -1,0 +1,46 @@
+---
+import { getContent, getUi, type Locale } from '../../data/index.ts';
+import Section from '../Section.astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const { stack } = getContent(lang);
+const ui = getUi(lang);
+---
+
+<Section id="stack" index={3} title={ui.nav.stack}>
+  <ul class="grid gap-4 sm:grid-cols-2">
+    {stack.map((category) => (
+      <li
+        class:list={[
+          'rounded-lg border border-line p-5',
+          category.secondary ? 'border-dashed' : 'bg-surface',
+        ]}
+      >
+        <h3 class="flex flex-wrap items-center gap-2 font-mono text-xs font-medium tracking-wider uppercase">
+          <span class={category.secondary ? 'text-muted' : 'text-accent'}>{category.label}</span>
+          {category.secondary && (
+            <span class="rounded border border-line px-1.5 py-0.5 text-[0.65rem] tracking-normal text-muted normal-case">
+              {ui.stack.secondaryTag}
+            </span>
+          )}
+        </h3>
+        <ul class="mt-4 flex flex-wrap gap-2">
+          {category.items.map((item) =>
+            item.detail ? (
+              <li class="w-full rounded-md border border-line bg-bg px-2.5 py-1.5 text-sm">
+                <span class="font-medium">{item.name}</span>
+                <span class="text-muted"> · {item.detail}</span>
+              </li>
+            ) : (
+              <li class="rounded-md border border-line bg-bg px-2.5 py-1 text-sm">{item.name}</li>
+            ),
+          )}
+        </ul>
+      </li>
+    ))}
+  </ul>
+</Section>

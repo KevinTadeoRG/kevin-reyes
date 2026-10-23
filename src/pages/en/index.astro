@@ -1,11 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getContent } from '../../data/index.ts';
-
-const lang = 'en';
-const { meta } = getContent(lang);
+import HomePage from '../../components/HomePage.astro';
 ---
 
-<BaseLayout lang={lang} title={meta.title} description={meta.description}>
-  <main id="content"></main>
-</BaseLayout>
+<HomePage lang="en" />

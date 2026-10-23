@@ -1,0 +1,20 @@
+---
+import { getContent, getUi, type Locale } from '../../data/index.ts';
+import Section from '../Section.astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const { about } = getContent(lang);
+const ui = getUi(lang);
+---
+
+<Section id="about" index={1} title={ui.nav.about}>
+  <div class="max-w-prose space-y-5 leading-relaxed text-pretty sm:text-lg">
+    {about.paragraphs.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+  </div>
+</Section>

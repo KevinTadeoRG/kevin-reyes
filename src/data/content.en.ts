@@ -24,7 +24,6 @@ export const contentEn = {
 
   about: {
     paragraphs: [
-      'Full Stack Engineer focused on fintech. I build products end to end: the PostgreSQL data model, the serverless API on AWS, and the React Native mobile app that consumes it.',
       "At Taveron I'm building a payments platform that handles interbank transfers (SPEI, Mexico's real-time payment system), bill payments, and gift card sales. My work spans PL/pgSQL stored functions and Lambdas behind API Gateway all the way to the app's data layer with Zustand and React Query.",
       "What sets me apart: I come from industrial automation. On a production line, you don't fix a mistake with a rollback — the plant stops. That's why I validate at the source, never trust the client, and design assuming everything can fail. Today I apply that mindset to a system that moves money.",
       "I'm drawn to software where mistakes have real consequences: money, sensitive data, or physical infrastructure.",

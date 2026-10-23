@@ -24,7 +24,6 @@ export const contentEs = {
 
   about: {
     paragraphs: [
-      'Ingeniero Full Stack enfocado en fintech. Construyo productos de punta a punta: el modelo de datos en PostgreSQL, la API serverless en AWS y la app móvil en React Native que la consume.',
       'En Taveron desarrollo una plataforma de pagos que procesa transferencias interbancarias (SPEI), pago de servicios y venta de tarjetas de regalo. Trabajo desde funciones almacenadas en PL/pgSQL y Lambdas detrás de API Gateway hasta la capa de datos de la app con Zustand y React Query.',
       'Lo que me diferencia: vengo de la automatización industrial. En una línea de producción un error no se revierte con un rollback; se detiene la planta. Por eso valido en el origen, no confío en el cliente y diseño asumiendo que todo puede fallar. Hoy aplico ese criterio a un sistema que mueve dinero.',
       'Me interesa construir software donde un error tiene consecuencias reales: dinero, datos sensibles o infraestructura física.',

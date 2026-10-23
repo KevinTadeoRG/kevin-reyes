@@ -1,0 +1,23 @@
+---
+import { getUi, type Locale } from '../data/index.ts';
+import { localePath, otherLocale } from '../lib/i18n.ts';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const target = otherLocale(lang);
+const ui = getUi(lang);
+---
+
+<!-- src/scripts/site.ts le agrega el #ancla de la sección visible para llegar al mismo lugar. -->
+<a
+  href={localePath(target)}
+  hreflang={target}
+  data-lang-switch
+  class="rounded-md px-2.5 py-1.5 font-mono text-xs text-muted transition-colors hover:bg-surface hover:text-fg"
+>
+  <span lang={target}>{getUi(target).languageName}</span>
+  <span class="sr-only"> — {ui.a11y.switchLanguage}</span>
+</a>
