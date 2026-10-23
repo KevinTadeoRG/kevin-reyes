@@ -1,0 +1,46 @@
+---
+import { getUi, LOCALES, person } from '../data/index.ts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { localePath } from '../lib/i18n.ts';
+
+// Una sola página para todo el sitio (Cloudflare Pages sirve /404.html con estado 404 para
+// cualquier ruta inexistente, también bajo /en/). Por eso muestra ambos idiomas.
+const blocks = LOCALES.map((locale) => ({ locale, ...getUi(locale).notFound }));
+const [main] = blocks;
+const title = `${blocks.map((b) => b.title).join(' · ')} — ${person.name}`;
+---
+
+<BaseLayout lang={LOCALES[0]} title={title} description={main?.message ?? ''} noindex>
+  <main
+    id="content"
+    class="mx-auto flex min-h-dvh max-w-5xl flex-col justify-center px-4 py-16 sm:px-6"
+  >
+    <p class="font-mono text-sm text-accent">404</p>
+    {blocks.map((block, i) => (
+      <section lang={block.locale} class:list={[i > 0 && 'mt-12 border-t border-line pt-10']}>
+        {i === 0 ? (
+          <h1 class="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-5xl">
+            {block.title}
+          </h1>
+        ) : (
+          <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{block.title}</h2>
+        )}
+        <p class="mt-4 max-w-prose text-lg leading-relaxed text-muted">{block.message}</p>
+        <p class="mt-6">
+          <a
+            href={localePath(block.locale)}
+            hreflang={block.locale}
+            class:list={[
+              'inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-colors',
+              i === 0
+                ? 'bg-accent text-accent-fg hover:bg-accent/90'
+                : 'border border-line bg-surface hover:border-muted',
+            ]}
+          >
+            {block.backHome}
+          </a>
+        </p>
+      </section>
+    ))}
+  </main>
+</BaseLayout>

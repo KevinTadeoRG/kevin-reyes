@@ -82,4 +82,8 @@ describe('buildHeadersFile', () => {
       assert.ok(file.includes(`  ${h}: `), h);
     }
   });
+
+  it('quita el Access-Control-Allow-Origin: * que agrega Cloudflare', () => {
+    assert.ok(buildHeadersFile("default-src 'self'").includes('  ! Access-Control-Allow-Origin\n'));
+  });
 });

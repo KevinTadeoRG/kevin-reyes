@@ -98,13 +98,19 @@ En línea en **https://kevin-reyes.pages.dev** (repo: https://github.com/KevinTa
   | Build command           | `pnpm build` |
   | Build output directory  | `dist`       |
   | Variable `NODE_VERSION` | `22.23.4`    |
+  | Variable `PNPM_VERSION` | `12.15.0`    |
+
+  Debe ser un proyecto de **Pages** (en el panel: _Continue to Pages_), no un Worker: el flujo de Workers corre `wrangler deploy` e intenta convertir el sitio en SSR.
 
 - **Encabezados de seguridad:** no se editan a mano. La integración `src/integrations/security-headers.ts` corre al final de `pnpm build`, calcula el SHA-256 de cada `<script>` y `<style>` incrustado y escribe `dist/_headers` con:
   - `Content-Security-Policy` sin `'unsafe-inline'` ni `'unsafe-eval'` (scripts y estilos incrustados permitidos solo por hash; `frame-ancestors 'none'`, `object-src 'none'`).
   - `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`.
   - `Cache-Control: immutable` para `/_astro/*` (archivos con hash en el nombre).
+  - Se quita el `Access-Control-Allow-Origin: *` que Cloudflare agrega por defecto.
 
   Si alguien agrega un atributo `style="…"` o un `onclick="…"` (que la CSP bloquearía), el build falla con el archivo y la etiqueta.
+
+- **Página 404:** `src/pages/404.astro` genera `/404.html`, una sola página bilingüe (ES y EN). Cloudflare Pages la sirve con estado **404** para cualquier ruta inexistente, también bajo `/en/`; sin ella, devolvía la página de inicio con estado 200 (un "soft 404"). Lleva `noindex` y no tiene canonical ni hreflang. (No hay `en/404.astro` porque Astro lo generaría como `en/404/index.html`, que Pages no usa.)
 
 ## Dominio propio (pendiente; pasos sin ejecutar)
 

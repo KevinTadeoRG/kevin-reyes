@@ -31,6 +31,11 @@ export const uiEs = {
   projects: {
     placeholder: 'Casos de estudio en preparación.',
   },
+  notFound: {
+    title: 'Página no encontrada',
+    message: 'La página que buscas no existe o cambió de dirección.',
+    backHome: 'Volver al inicio',
+  },
   contact: {
     linkedin: 'LinkedIn',
     github: 'GitHub',
