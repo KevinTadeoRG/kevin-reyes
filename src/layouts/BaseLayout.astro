@@ -1,11 +1,13 @@
 ---
 import { Font } from 'astro:assets';
+import Seo from '../components/Seo.astro';
+import type { Locale } from '../data/index.ts';
 import '../styles/global.css';
 
 interface Props {
-  lang: 'es' | 'en';
+  lang: Locale;
   title: string;
-  description?: string;
+  description: string;
 }
 
 const { lang, title, description } = Astro.props;
@@ -17,10 +19,13 @@ const { lang, title, description } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9fafb" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1013" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    {description && <meta name="description" content={description} />}
+    <meta name="description" content={description} />
+    <Seo lang={lang} title={title} description={description} />
     <Font cssVariable="--font-plex-sans" preload />
     <Font cssVariable="--font-plex-mono" />
     <!-- Aplica el tema guardado antes de pintar, para evitar un destello del tema equivocado. -->

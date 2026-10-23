@@ -2,7 +2,7 @@
 
 Sitio bilingüe (español en `/`, inglés en `/en`) construido con **Astro + TypeScript (strict) + Tailwind CSS**.
 
-> Estado: **Fase 2 — diseño y secciones**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
+> Estado: **Fase 3 — SEO y rendimiento**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
 
 ## Requisitos
 
@@ -76,6 +76,13 @@ Reglas:
 - **ids y fechas** deben ser idénticos en ambos idiomas. Las fechas van en formato `YYYY-MM`; `end: null` significa "actualidad".
 - Cada empresa tiene una lista de `roles` (del más reciente al más antiguo); así una empresa con varios puestos se muestra como una sola.
 - Los pendientes se marcan con `TODO(kevin): ...` como comentario en el archivo de datos.
+
+## SEO
+
+- **URL base:** vive solo en `SITE_URL`, al inicio de `astro.config.mjs`. De ahí salen canonical, `hreflang` (`es`, `en`, `x-default`), Open Graph, Twitter Card, JSON-LD, `sitemap.xml` y `robots.txt`. Al cambiar de subdominio o comprar dominio, se edita esa línea y nada más. Mientras sea un marcador `.example`, el build muestra un aviso.
+- **Imagen para compartir:** `src/pages/og.png.ts` genera `/og.png` (1200×630) en el build a partir de los datos, con satori + sharp e IBM Plex. Si cambia el nombre o el titular, la imagen se actualiza sola.
+- **Datos estructurados:** JSON-LD `Person` con nombre, puesto actual (el rol sin fecha de fin) y `sameAs` (LinkedIn, GitHub). No incluye el correo.
+- **Lighthouse (móvil):** 100 / 100 / 100 / 100 en Performance, Accessibility, Best Practices y SEO, en `/` y `/en/` (medido con la build local servida por `pnpm preview`).
 
 ## Notas
 

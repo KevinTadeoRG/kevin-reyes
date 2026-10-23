@@ -2,8 +2,21 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
+/**
+ * URL pública del sitio. ÚNICO lugar donde vive: de aquí salen canonical, hreflang,
+ * Open Graph, JSON-LD, sitemap.xml y robots.txt.
+ * TODO(kevin): `.example` es un marcador; se reemplaza en la Fase 4 con el subdominio del
+ * hosting (y después con el dominio propio).
+ */
+const SITE_URL = 'https://kevin-reyes.example';
+
+if (new URL(SITE_URL).hostname.endsWith('.example')) {
+  console.warn(`[site] SITE_URL todavía es un marcador (${SITE_URL}). Cámbialo antes de publicar.`);
+}
+
 // https://astro.build/config
 export default defineConfig({
+  site: SITE_URL,
   i18n: {
     locales: ['es', 'en'],
     defaultLocale: 'es',
