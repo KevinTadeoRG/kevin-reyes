@@ -1,8 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getContent } from '../data/index.ts';
+
+const lang = 'es';
+const { meta } = getContent(lang);
 ---
 
-<!-- Fase 0: página en blanco. El título y el contenido salen de los archivos de datos en la Fase 1. -->
-<BaseLayout lang="es" title="Kevin Reyes">
-  <main id="contenido"></main>
+<BaseLayout lang={lang} title={meta.title} description={meta.description}>
+  <main id="content"></main>
 </BaseLayout>

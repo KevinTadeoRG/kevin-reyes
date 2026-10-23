@@ -2,7 +2,7 @@
 
 Sitio bilingüe (español en `/`, inglés en `/en`) construido con **Astro + TypeScript (strict) + Tailwind CSS**.
 
-> Estado: **Fase 0 — setup**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
+> Estado: **Fase 1 — contenido y estructura de datos**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
 
 ## Requisitos
 
@@ -33,6 +33,7 @@ No ejecutes `pnpm install` desde Windows sobre esta carpeta: instalaría binario
 | `pnpm build`        | Revisa tipos (`astro check`) y genera el sitio en `dist/` |
 | `pnpm preview`      | Sirve el build de `dist/` para probarlo                   |
 | `pnpm check`        | Solo revisión de tipos                                    |
+| `pnpm test`         | Pruebas de contenido (esquema, paridad ES/EN, fechas)     |
 | `pnpm lint`         | ESLint                                                    |
 | `pnpm format`       | Formatea todo con Prettier                                |
 | `pnpm format:check` | Verifica formato sin modificar                            |
@@ -44,10 +45,31 @@ src/
   components/   # Componentes .astro y islas React (Fase 2)
   layouts/      # BaseLayout.astro: <html lang>, <head>, estilos globales
   pages/        # index.astro → "/" (es) · en/index.astro → "/en"
-  data/         # Contenido tipado ES/EN (Fase 1)
+  data/         # Contenido tipado ES/EN y textos de interfaz (ver abajo)
+  lib/          # Utilidades (formato de fechas)
   styles/       # global.css (Tailwind)
 public/         # favicon, imagen OG, CV en PDF
 ```
+
+## Cómo editar el contenido
+
+Todo el texto del sitio vive en `src/data/`; los componentes no tienen texto escrito a mano.
+
+| Archivo                           | Qué contiene                                                     |
+| --------------------------------- | ---------------------------------------------------------------- |
+| `content.es.ts` / `content.en.ts` | Perfil, sobre mí, stack, experiencia, educación, metadatos       |
+| `ui.es.ts` / `ui.en.ts`           | Menú, botones, etiquetas de accesibilidad y del formulario       |
+| `person.ts`                       | Nombre, enlaces y correo (partido en dos, nunca completo)        |
+| `schema.ts`                       | Esquemas zod: qué campos existen y qué formato llevan            |
+| `parity.ts`                       | Chequeo de que ES y EN tengan la misma forma                     |
+| `index.ts`                        | Valida todo y expone `getContent(lang)`, `getUi(lang)`, `person` |
+
+Reglas:
+
+- **Cambia siempre ES y EN a la vez.** Si un idioma tiene un campo, una viñeta o un puesto que el otro no, `pnpm build` falla e indica la ruta exacta (p. ej. `$.experience[0].roles[0].groups[0].bullets: es tiene 5 elementos, en tiene 4`).
+- **ids y fechas** deben ser idénticos en ambos idiomas. Las fechas van en formato `YYYY-MM`; `end: null` significa "actualidad".
+- Cada empresa tiene una lista de `roles` (del más reciente al más antiguo); así una empresa con varios puestos se muestra como una sola.
+- Los pendientes se marcan con `TODO(kevin): ...` como comentario en el archivo de datos.
 
 ## Notas
 
