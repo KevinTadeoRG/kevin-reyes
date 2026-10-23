@@ -1,0 +1,21 @@
+// @ts-check
+import { defineConfig, globalIgnores } from 'eslint/config';
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import astro from 'eslint-plugin-astro';
+import prettier from 'eslint-config-prettier';
+import globals from 'globals';
+
+export default defineConfig(
+  globalIgnores(['dist/', '.astro/', 'node_modules/', 'public/']),
+  js.configs.recommended,
+  tseslint.configs.strict,
+  astro.configs.recommended,
+  {
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+    },
+  },
+  // Siempre al final: apaga reglas de estilo que choquen con Prettier
+  prettier,
+);

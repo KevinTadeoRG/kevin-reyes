@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+
+/* Modo oscuro controlado por clase (.dark en <html>), para permitir el toggle en la Fase 2 */
+@custom-variant dark (&:where(.dark, .dark *));
