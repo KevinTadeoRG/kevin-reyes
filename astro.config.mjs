@@ -1,14 +1,14 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import securityHeaders from './src/integrations/security-headers.ts';
 
 /**
  * URL pública del sitio. ÚNICO lugar donde vive: de aquí salen canonical, hreflang,
  * Open Graph, JSON-LD, sitemap.xml y robots.txt.
- * TODO(kevin): `.example` es un marcador; se reemplaza en la Fase 4 con el subdominio del
- * hosting (y después con el dominio propio).
+ * Al conectar un dominio propio, se cambia solo esta línea (ver README → Dominio propio).
  */
-const SITE_URL = 'https://kevin-reyes.example';
+const SITE_URL = 'https://kevin-reyes.pages.dev';
 
 if (new URL(SITE_URL).hostname.endsWith('.example')) {
   console.warn(`[site] SITE_URL todavía es un marcador (${SITE_URL}). Cámbialo antes de publicar.`);
@@ -17,6 +17,8 @@ if (new URL(SITE_URL).hostname.endsWith('.example')) {
 // https://astro.build/config
 export default defineConfig({
   site: SITE_URL,
+  // Escribe dist/_headers (CSP con hashes + encabezados de seguridad) al terminar el build.
+  integrations: [securityHeaders()],
   i18n: {
     locales: ['es', 'en'],
     defaultLocale: 'es',

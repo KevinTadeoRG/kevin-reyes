@@ -2,7 +2,7 @@
 
 Sitio bilingüe (español en `/`, inglés en `/en`) construido con **Astro + TypeScript (strict) + Tailwind CSS**.
 
-> Estado: **Fase 3 — SEO y rendimiento**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
+> Estado: **Fase 4 — publicación inicial**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
 
 ## Requisitos
 
@@ -79,10 +79,45 @@ Reglas:
 
 ## SEO
 
-- **URL base:** vive solo en `SITE_URL`, al inicio de `astro.config.mjs`. De ahí salen canonical, `hreflang` (`es`, `en`, `x-default`), Open Graph, Twitter Card, JSON-LD, `sitemap.xml` y `robots.txt`. Al cambiar de subdominio o comprar dominio, se edita esa línea y nada más. Mientras sea un marcador `.example`, el build muestra un aviso.
+- **URL base:** vive solo en `SITE_URL`, al inicio de `astro.config.mjs`. De ahí salen canonical, `hreflang` (`es`, `en`, `x-default`), Open Graph, Twitter Card, JSON-LD, `sitemap.xml` y `robots.txt`. Al cambiar de subdominio o comprar dominio, se edita esa línea y nada más. Si se pone un marcador `.example`, el build muestra un aviso.
 - **Imagen para compartir:** `src/pages/og.png.ts` genera `/og.png` (1200×630) en el build a partir de los datos, con satori + sharp e IBM Plex. Si cambia el nombre o el titular, la imagen se actualiza sola.
 - **Datos estructurados:** JSON-LD `Person` con nombre, puesto actual (el rol sin fecha de fin) y `sameAs` (LinkedIn, GitHub). No incluye el correo.
 - **Lighthouse (móvil):** 100 / 100 / 100 / 100 en Performance, Accessibility, Best Practices y SEO, en `/` y `/en/` (medido con la build local servida por `pnpm preview`).
+
+## Publicación (Cloudflare Pages)
+
+En línea en **https://kevin-reyes.pages.dev** (repo: https://github.com/KevinTadeoRG/kevin-reyes).
+
+- **Deploy automático:** cada push a `main` publica en producción. Cada PR o rama obtiene su propia URL de preview (`<hash>.kevin-reyes.pages.dev`), que Cloudflare marca con `X-Robots-Tag: noindex`.
+- **Configuración del proyecto en Cloudflare:**
+
+  | Ajuste                  | Valor        |
+  | ----------------------- | ------------ |
+  | Production branch       | `main`       |
+  | Framework preset        | Astro        |
+  | Build command           | `pnpm build` |
+  | Build output directory  | `dist`       |
+  | Variable `NODE_VERSION` | `22.23.4`    |
+
+- **Encabezados de seguridad:** no se editan a mano. La integración `src/integrations/security-headers.ts` corre al final de `pnpm build`, calcula el SHA-256 de cada `<script>` y `<style>` incrustado y escribe `dist/_headers` con:
+  - `Content-Security-Policy` sin `'unsafe-inline'` ni `'unsafe-eval'` (scripts y estilos incrustados permitidos solo por hash; `frame-ancestors 'none'`, `object-src 'none'`).
+  - `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`.
+  - `Cache-Control: immutable` para `/_astro/*` (archivos con hash en el nombre).
+
+  Si alguien agrega un atributo `style="…"` o un `onclick="…"` (que la CSP bloquearía), el build falla con el archivo y la etiqueta.
+
+## Dominio propio (pendiente; pasos sin ejecutar)
+
+1. **Comprar el dominio.** Si es en Cloudflare Registrar, el DNS queda en la misma cuenta (paso 3 automático).
+2. **Cloudflare → Workers & Pages → `kevin-reyes` → Custom domains → Set up a custom domain** y escribir el dominio (p. ej. `kevinreyes.dev`) y, si se quiere, `www`.
+3. **DNS:**
+   - Dominio en Cloudflare: Cloudflare crea el registro `CNAME` solo.
+   - Dominio en otro registrador: crear `CNAME www → kevin-reyes.pages.dev`; para el dominio raíz, mover los nameservers a Cloudflare (o usar el `CNAME`/`ALIAS` en la raíz si el registrador lo permite).
+4. **Esperar el certificado** (Cloudflare lo emite solo; suele tardar minutos).
+5. **Cambiar `SITE_URL`** en `astro.config.mjs` al dominio nuevo, hacer commit y push. Eso actualiza canonical, hreflang, Open Graph, JSON-LD, sitemap y robots.
+6. **Redirigir `kevin-reyes.pages.dev` y `www` al dominio principal** con una Redirect Rule (Bulk Redirects) en Cloudflare, para que no haya contenido duplicado.
+7. **Opcional:** con dominio propio se puede agregar `preload` al HSTS y registrarlo en hstspreload.org (es difícil de revertir; hacerlo solo cuando el dominio sea definitivo).
+8. **Fase 5:** actualizar el origen permitido de CORS de la API del formulario al dominio nuevo.
 
 ## Notas
 
