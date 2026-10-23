@@ -31,6 +31,11 @@ export const uiEn = {
   projects: {
     placeholder: 'Case studies in progress.',
   },
+  notFound: {
+    title: 'Page not found',
+    message: "The page you're looking for doesn't exist or has moved.",
+    backHome: 'Back to home',
+  },
   contact: {
     linkedin: 'LinkedIn',
     github: 'GitHub',

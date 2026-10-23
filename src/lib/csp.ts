@@ -66,7 +66,11 @@ export function buildCsp(hashes: InlineHashes, extras: CspExtras = {}): string {
     .join('; ');
 }
 
-/** Archivo `_headers` de Cloudflare Pages. */
+/**
+ * Archivo `_headers` de Cloudflare Pages.
+ * `! Access-Control-Allow-Origin` quita el `*` que Cloudflare agrega por defecto: el sitio
+ * no necesita que otros orígenes lean sus respuestas.
+ */
 export function buildHeadersFile(csp: string): string {
   return `# Generado en el build por src/integrations/security-headers.ts. No editar a mano.
 /*
@@ -77,6 +81,7 @@ export function buildHeadersFile(csp: string): string {
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: accelerometer=(), browsing-topics=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
+  ! Access-Control-Allow-Origin
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable

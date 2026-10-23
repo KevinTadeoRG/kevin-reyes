@@ -127,6 +127,7 @@ export const uiSchema = z.strictObject({
   experience: z.strictObject({ present: text }),
   stack: z.strictObject({ secondaryTag: text }),
   projects: z.strictObject({ placeholder: text }),
+  notFound: z.strictObject({ title: text, message: text, backHome: text }),
   contact: z.strictObject({
     linkedin: text,
     github: text,
