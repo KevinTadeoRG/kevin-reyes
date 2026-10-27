@@ -1,0 +1,15 @@
+[project]
+name = "contact-function"
+version = "0.1.0"
+description = "Lambda del formulario de contacto: API Gateway (HTTP API) → validación → Amazon SES"
+requires-python = ">=3.12,<3.13"
+# Sin dependencias de producción: boto3 lo trae el runtime de AWS Lambda.
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"

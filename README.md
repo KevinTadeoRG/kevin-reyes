@@ -2,7 +2,7 @@
 
 Sitio bilingüe (español en `/`, inglés en `/en`) construido con **Astro + TypeScript (strict) + Tailwind CSS**.
 
-> Estado: **Fase 4 — publicación inicial**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
+> Estado: **Fase 5 — formulario de contacto en AWS**. Ver el plan de fases en `plan-sitio-cv.md` (fuera del repo).
 
 ## Requisitos
 
@@ -51,6 +51,8 @@ src/
   scripts/      # site.ts: tema, sección activa, correo (JS mínimo, sin framework)
   styles/       # global.css: tokens de color (claro/oscuro) y estilos base
 public/         # favicon, imagen OG, CV en PDF
+backend/contact/  # Lambda del formulario (Python 3.12) y sus pruebas (pytest)
+infra/            # Infraestructura AWS con CDK (TypeScript), paquete aparte
 ```
 
 ### CV en PDF
@@ -111,6 +113,42 @@ En línea en **https://kevin-reyes.pages.dev** (repo: https://github.com/KevinTa
   Si alguien agrega un atributo `style="…"` o un `onclick="…"` (que la CSP bloquearía), el build falla con el archivo y la etiqueta.
 
 - **Página 404:** `src/pages/404.astro` genera `/404.html`, una sola página bilingüe (ES y EN). Cloudflare Pages la sirve con estado **404** para cualquier ruta inexistente, también bajo `/en/`; sin ella, devolvía la página de inicio con estado 200 (un "soft 404"). Lleva `noindex` y no tiene canonical ni hreflang. (No hay `en/404.astro` porque Astro lo generaría como `en/404/index.html`, que Pages no usa.)
+
+## Formulario de contacto (AWS)
+
+```
+Formulario (sitio) ──POST /contact──▶ API Gateway (HTTP API) ──▶ Lambda (Python 3.12) ──▶ Amazon SES ──▶ tu correo
+                                      CORS solo del sitio          valida todo en el servidor
+                                      throttling 5 req/s, ráfaga 10
+```
+
+| Carpeta            | Qué hay                                                                    | Pruebas                          |
+| ------------------ | -------------------------------------------------------------------------- | -------------------------------- |
+| `backend/contact/` | `src/validation.py` (reglas) y `src/handler.py` (Lambda); sin dependencias | `uv run pytest`                  |
+| `infra/`           | Stack CDK `KevinReyesContact` en `us-east-1` (`lib/contact-stack.ts`)      | `pnpm test` (plantilla, sin AWS) |
+
+**Seguridad:**
+
+- Validación en el servidor (no se confía en el navegador): tipos, campos desconocidos, longitudes (nombre 100, correo 254, mensaje 5000, cuerpo 10 KB), formato de correo y caracteres de control (bloquea la inyección de encabezados con saltos de línea).
+- Anti-spam: campo honeypot `website` (si viene lleno, se responde "ok" sin enviar nada) + throttling de API Gateway. Turnstile queda para después, solo si llega spam.
+- CORS en API Gateway limitado al sitio; la Lambda además rechaza cualquier otro `Origin`.
+- Errores genéricos al cliente (`forbidden`, `invalid_request`, `server_error`); el motivo va a CloudWatch Logs (retención 30 días). **Nunca** se registran el nombre, el correo ni el contenido del mensaje: solo longitudes y el id de la petición.
+- IAM de mínimo privilegio: un rol propio que solo puede escribir en su grupo de logs y hacer `ses:SendEmail` desde la identidad verificada (con condición `ses:FromAddress`).
+- El visitante va en `Reply-To`; el `From` siempre es la identidad verificada.
+- El correo no está en el código: la infraestructura lo lee de `infra/.env` (no versionado; ver `infra/.env.example`) y se lo pasa a la Lambda como variable de entorno.
+
+### Pasos manuales (una sola vez)
+
+1. **Cuenta de AWS** y acceso por terminal. Lo recomendable es IAM Identity Center (SSO): `aws configure sso` crea un perfil con credenciales temporales. No usar llaves del usuario root.
+2. **Verificar el correo en SES**, región **us-east-1**: _Amazon SES → Identities → Create identity → Email address_, escribir el correo y abrir el enlace que llega. Con el sandbox de SES basta, porque remitente y destinatario son la misma identidad verificada; no hace falta pedir acceso a producción.
+3. **Configurar el despliegue:** `cp infra/.env.example infra/.env` y poner el correo verificado en `CONTACT_EMAIL`.
+4. **Preparar la cuenta para CDK** (una vez por cuenta y región): `cd infra && pnpm exec cdk bootstrap`.
+5. **Desplegar:** `pnpm exec cdk deploy`. Al final imprime `ContactEndpoint`, la URL que usa el formulario.
+6. **Filtro en Gmail** para que no caiga en Spam (sin dominio propio, el correo sale de servidores de Amazon con remitente `@gmail.com` y no pasa la alineación DMARC): _Buscar → Mostrar opciones_ con asunto `[kevin-reyes.pages.dev]` → _Crear filtro → Nunca enviarlo a Spam_.
+
+Con dominio propio: verificar el dominio en SES con DKIM y cambiar `CONTACT_EMAIL` (o separar remitente y destinatario) a una dirección del dominio; el filtro deja de ser necesario.
+
+**Costo:** dentro de la capa gratuita de Lambda y API Gateway para este volumen; SES cobra USD 0.10 por cada 1,000 correos.
 
 ## Dominio propio (pendiente; pasos sin ejecutar)
 
