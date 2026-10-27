@@ -5,6 +5,13 @@ node_modules/
 dist/
 .astro/
 
+# Backend (Python) e infraestructura (CDK)
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+cdk.out/
+
 # Variables de entorno y secretos (nunca al repo)
 .env*
 # Excepción: plantilla sin valores reales

@@ -1,0 +1,6 @@
+{
+  "app": "node --env-file-if-exists=.env bin/app.ts",
+  "watch": {
+    "include": ["bin/**", "lib/**", "../backend/contact/src/**"]
+  }
+}
